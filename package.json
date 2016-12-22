@@ -1,0 +1,16 @@
+{
+  "name": "bedopedia-realtime",
+  "version": "1.0.0",
+  "description": "bedopedia realtime notifications/message etc.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "express": "^4.13.3",
+    "socket.io": "^1.7.2"
+  }
+}
