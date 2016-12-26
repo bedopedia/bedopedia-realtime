@@ -8,9 +8,12 @@ var express = require('express'),
 server.listen(8080);
 app.use(bodyParser.json());
 
+console.log('listening on 8080');
+
 // notifications
 // require('./notifications/notifications.js')(io);
 io.on('connection', function(socket) {
+  console.log('connected...');
   socket.on('message', function(from, msg) {
     console.log('recieved message from',from, 'msg', JSON.stringify(msg));
     console.log('broadcasting message');
