@@ -11,6 +11,8 @@
   "dependencies": {
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
+    "extend": "^3.0.0",
+    "mongodb": "^2.2.24",
     "socket.io": "^1.7.2"
   }
 }

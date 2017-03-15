@@ -1,19 +1,13 @@
-var express = require('express'),
-    bodyParser = require("body-parser"),
-    io = require('socket.io'),
-    http = require('http'),
-    app = express(),
-    server = http.createServer(app),
-    io = io.listen(server);
+require('./lib/array');
 
-var SchoolDict = require('./schools_dict/methods');
-var schoolDictRoutes = require('./schools_dict/routes')
-schoolDictRoutes(app);
+var express = require('express');
+var bodyParser = require("body-parser");
+var io = require('socket.io');
+var http = require('http');
+var app = express();
+var server = http.createServer(app);
+var io = io.listen(server);
 
-var Authentication = require("./authentication/methods")
-
-server.listen(8080);
-console.log('listening on 8080');
 
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
@@ -23,6 +17,38 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
     next();
 });
+
+var SchoolDict = require('./schools_dict/methods');
+var schoolDictRoutes = require('./schools_dict/routes')
+schoolDictRoutes(app);
+
+var MongoDB = require('./mongodb/methods')
+var MongoDBRoutes = require('./mongodb/routes')
+MongoDBRoutes(app);
+
+var Authentication = require("./authentication/methods")
+
+server.listen(8080);
+console.log('listening on 8080');
+
+
+
+
+// MongoDB.insert({
+//   name: "ahmed",level: "3", school: 'glory'
+// })
+// MongoDB.insert({
+//   name: "ali",level: "1", school: 'glory'
+// })
+// MongoDB.insert({
+//   name: "mohamed",level: "1", school: 'glory'
+// })
+// MongoDB.insert({
+//   name: "momen",level: "3", school: 'glory'
+// })
+// MongoDB.insert({name: 'momen'})
+// MongoDB.findAll();
+// MongoDB.register({id: 1, name: 'user1'})
 
 // Authentication.authenticate(request).then(function(status){
 //   response.status(status).end();
