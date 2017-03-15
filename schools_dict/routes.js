@@ -1,11 +1,7 @@
-var fs = require('fs');
-var path = require('path');
-var filePath = path.join(__dirname, 'schools.json');
-var schools = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-
+var methods = require('./methods')
 module.exports = function(app){
   app.get('/schools_dict/:name', function(request, response){
-    var url = schools[request.params.name]
+    var url = methods.getSchoolUrl(request.params.name)
     if (url != undefined) {
       response.status(200).json({url: url})
     } else {

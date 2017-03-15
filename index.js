@@ -6,7 +6,9 @@ var express = require('express'),
     server = http.createServer(app),
     io = io.listen(server);
 
-require('./schools_dict')(app);
+var schoolDict = require('./schools_dict/methods');
+var schoolDictRoutes = require('./schools_dict/routes')
+schoolDictRoutes(app);
 
 server.listen(8080);
 console.log('listening on 8080');
