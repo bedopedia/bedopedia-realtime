@@ -10,6 +10,8 @@ var schoolDict = require('./schools_dict/methods');
 var schoolDictRoutes = require('./schools_dict/routes')
 schoolDictRoutes(app);
 
+var http = require("http");
+
 server.listen(8080);
 console.log('listening on 8080');
 
@@ -22,7 +24,24 @@ app.use(function(req, res, next) {
     next();
 });
 
-
+app.get('/test', function(request, response){
+  var at = request.get('access-token');
+  var client = request.get('client');
+  var uid = request.get('uid');
+  console.log(at, client, uid);
+  var req = http.request({
+    host: 'localhost',
+    port: 3000,
+    path: '/api/auth/validate_token?uid='+uid+'&access-token='+at+'&client='+client,
+    method: 'GET'
+  }, function(res){
+    response.status(res.statusCode).end()
+  })
+  req.on('error', function (er) {
+    response.status(401).end()
+  })
+  req.end();
+})
 
 // notifications
 // require('./notifications/notifications.js')(io);
