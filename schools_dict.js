@@ -1,5 +1,5 @@
 var fs = require('fs');
-var schools = JSON.parse(fs.readFileSync('schools.json', 'utf8'));
+var schools = JSON.parse(fs.readFileSync('./schools.json', 'utf8'));
 
 module.exports = function(app){
   app.get('/schools_dict/:name', function(request, response){
