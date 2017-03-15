@@ -27,28 +27,10 @@ var MongoDBRoutes = require('./mongodb/routes')
 MongoDBRoutes(app);
 
 var Authentication = require("./authentication/methods")
+var Notification = require('./notifications/methods')
 
 server.listen(8080);
 console.log('listening on 8080');
-
-
-
-
-// MongoDB.insert({
-//   name: "ahmed",level: "3", school: 'glory'
-// })
-// MongoDB.insert({
-//   name: "ali",level: "1", school: 'glory'
-// })
-// MongoDB.insert({
-//   name: "mohamed",level: "1", school: 'glory'
-// })
-// MongoDB.insert({
-//   name: "momen",level: "3", school: 'glory'
-// })
-// MongoDB.insert({name: 'momen'})
-// MongoDB.findAll();
-// MongoDB.register({id: 1, name: 'user1'})
 
 // Authentication.authenticate(request).then(function(status){
 //   response.status(status).end();
@@ -57,28 +39,22 @@ console.log('listening on 8080');
 // })
 
 // notifications
-// require('./notifications/notifications.js')(io);
 io.on('connection', function(socket) {
-console.log('connected...');
-socket.on('message', function(from, msg) {
-  console.log('recieved message from',from, 'msg', JSON.stringify(msg));
-  console.log('broadcasting message');
-  console.log('payload is', msg);
-  io.sockets.emit('broadcast', {
-    payload: msg,
-    source: from
-  });
-  console.log('broadcast complete');
-});
+  var userId = socket.request._query.id;
+  var school = socket.request._query.school;
+  MongoDB.register({id: userId,school: school, sockets: [socket.id]}).then(()=>{
+
+    Notification.notify({school: 'Bedopedia', id: '3'}, {text: "ho"}, io)
+  })
 });
 
-app.post('/realtime',function(request, response){
-var body = request.body;
-console.log('=================');
-console.log(body);
-console.log('=================');
-if (body.event) {
-  io.sockets.emit(body.event,body.payload);
-}
-response.json({status: 'okay'})
-})
+// app.post('/realtime',function(request, response){
+// var body = request.body;
+// console.log('=================');
+// console.log(body);
+// console.log('=================');
+// if (body.event) {
+//   io.sockets.emit(body.event,body.payload);
+// }
+// response.json({status: 'okay'})
+// })

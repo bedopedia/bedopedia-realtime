@@ -6,50 +6,50 @@ var extend = require('extend');
 var url = 'mongodb://localhost:27017/myproject';
 const USERS = 'users';
 
-var insert = function(collectionName, record, callback) {
-  MongoClient.connect(url, function(erro, db){
-    var collection = db.collection(collectionName);
-    var ret = collection.insert(record);
-    ret.then(function(response){
-      db.close();
-      if (callback) {
-        callback(response)
-      }
+var insert = function(collectionName, record) {
+  return new Promise(function(resolve, reject){
+    MongoClient.connect(url, function(erro, db){
+      var collection = db.collection(collectionName);
+      var ret = collection.insert(record);
+      ret.then(function(response){
+        db.close();
+        resolve(response)
+      })
     })
   })
 }
 
-var update = function(collectionName, query, record, callback) {
-  MongoClient.connect(url, function(erro, db){
-    var collection = db.collection(collectionName);
-    collection.updateOne(query, record, function(err, result) {
-      assert.equal(err, null);
-      db.close();
-      if (callback) {
-        callback(result)
-      }
-    });
+var update = function(collectionName, query, record) {
+  return new Promise((resolve, reject)=> {
+    MongoClient.connect(url, function(erro, db){
+      var collection = db.collection(collectionName);
+      collection.updateOne(query, record, function(err, result) {
+        assert.equal(err, null);
+        db.close();
+        resolve(result)
+      });
+    })
   })
 }
 
-var find = function(collectionName, query, callback) {
-  MongoClient.connect(url, function(erro, db){
-    var collection = db.collection(collectionName);
-    collection.find(query).toArray(function(err, docs) {
-      assert.equal(err, null);
-      db.close();
-      if (callback) {
-        callback(docs);
-      }
-    });
+var find = function(collectionName, query) {
+  return new Promise((resolve, reject)=> {
+    MongoClient.connect(url, function(erro, db){
+      var collection = db.collection(collectionName);
+      collection.find(query).toArray(function(err, docs) {
+        assert.equal(err, null);
+        db.close();
+        resolve(docs);
+      });
+    })
   })
 }
 
 module.exports = {
   register: function(user) {
     var query = {id: user.id};
-    return new Promise(function(resolve, reject){
-      find(USERS, query, function(users){
+    return new Promise((resolve, reject) => {
+      find(USERS, query).then((users) => {
         if (users.length > 0) { //exists
           var updatedUser = extend({tokens: [], sockets: []}, users[0], user);
           updatedUser.tokens = [... new Set(updatedUser.tokens.concat(users[0].tokens))];
@@ -62,15 +62,18 @@ module.exports = {
           if (updatedUser.sockets.length == 0) {
             delete updatedUser.sockets
           }
-          update(USERS, query, updatedUser, function(){
-            resolve();
-          })
+          update(USERS, query, updatedUser).then(() => {resolve(updatedUser)})
         } else {
-          insert(USERS, user, function () {
-            resolve();
-          });
+          insert(USERS, user).then(() => {resolve(user)});
         }
       })
+    })
+  },
+  getUser: function(user) {
+    return new Promise((resolve, reject) => {
+      find(USERS, user).then((users)=> {
+        resolve(users[0]);
+      },(error)=>{reject(error)})
     })
   }
 }
