@@ -43,8 +43,11 @@ io.on('connection', function(socket) {
   var userId = socket.request._query.id;
   var school = socket.request._query.school;
   MongoDB.register({id: userId,school: school, sockets: [socket.id]}).then(()=>{
-
-    Notification.notify({school: 'Bedopedia', id: '3'}, {text: "ho"}, io)
+    MongoDB.unregister({id: userId, school: school}, io).then((response) => {
+      console.log(response);
+    },(error) => {
+      console.log(error);
+    })
   })
 });
 

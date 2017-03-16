@@ -75,5 +75,28 @@ module.exports = {
         resolve(users[0]);
       },(error)=>{reject(error)})
     })
+  },
+  unregister: (user, io) => {
+    return new Promise((resolve, reject) => {
+      find(USERS, user).then((users) => {
+        var user = users[0];
+        if (user) {
+          var soc = user.sockets;
+          for (var i = 0; i < soc.length; i++) {
+            if (!io.sockets.connected[soc[i]]) {
+              soc.splice(i, 1);
+              i--;
+            }
+          }
+          update(USERS, user, {$set: {sockets: soc}}).then(() => {
+            resolve(soc);
+          }, () => {
+            reject();
+          })
+        } else {
+          reject("user with id ${user.id} not found")
+        }
+      })
+    })
   }
 }
