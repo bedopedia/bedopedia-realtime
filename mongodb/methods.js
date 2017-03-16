@@ -23,7 +23,7 @@ var update = function(collectionName, query, record) {
   return new Promise((resolve, reject)=> {
     MongoClient.connect(url, function(erro, db){
       var collection = db.collection(collectionName);
-      collection.updateOne(query, record, function(err, result) {
+      collection.update(query, record, function(err, result) {
         assert.equal(err, null);
         db.close();
         resolve(result)
@@ -45,17 +45,40 @@ var find = function(collectionName, query) {
   })
 }
 
+var getTokens = (oldTokens, newTokens) => {
+  var ret = [];
+  if (!oldTokens) {
+    oldTokens = [];
+  }
+  if (!newTokens) {
+    newTokens = [];
+  }
+  ret = [... new Set(oldTokens.concat(newTokens))];
+  return ret.clean(undefined);
+}
+
+var getOpenSockets = (sockets, io) => {
+  if (!io) {
+    return sockets;
+  }
+  var soc = [];
+  for (var i = 0; i < sockets.length; i++) {
+    if (io.sockets.connected[sockets[i]]) {
+      soc.push(sockets[i])
+    }
+  }
+  return soc;
+}
+
 module.exports = {
-  register: function(user) {
-    var query = {id: user.id};
+  register: function(user,io) {
+    var query = {id: user.id, school: user.school};
     return new Promise((resolve, reject) => {
       find(USERS, query).then((users) => {
         if (users.length > 0) { //exists
           var updatedUser = extend({tokens: [], sockets: []}, users[0], user);
-          updatedUser.tokens = [... new Set(updatedUser.tokens.concat(users[0].tokens))];
-          updatedUser.sockets = [... new Set(updatedUser.sockets.concat(users[0].sockets))];
-          updatedUser.tokens.clean(undefined)
-          updatedUser.sockets.clean(undefined)
+          updatedUser.tokens = getTokens(user.tokens,users[0].tokens);
+          updatedUser.sockets = getOpenSockets(getTokens(user.sockets, users[0].sockets),io);
           if (updatedUser.tokens.length == 0) {
             delete updatedUser.tokens
           }
@@ -74,29 +97,6 @@ module.exports = {
       find(USERS, user).then((users)=> {
         resolve(users[0]);
       },(error)=>{reject(error)})
-    })
-  },
-  unregister: (user, io) => {
-    return new Promise((resolve, reject) => {
-      find(USERS, user).then((users) => {
-        var user = users[0];
-        if (user) {
-          var soc = user.sockets;
-          for (var i = 0; i < soc.length; i++) {
-            if (!io.sockets.connected[soc[i]]) {
-              soc.splice(i, 1);
-              i--;
-            }
-          }
-          update(USERS, user, {$set: {sockets: soc}}).then(() => {
-            resolve(soc);
-          }, () => {
-            reject();
-          })
-        } else {
-          reject("user with id ${user.id} not found")
-        }
-      })
     })
   }
 }

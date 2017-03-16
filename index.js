@@ -27,7 +27,10 @@ var MongoDBRoutes = require('./mongodb/routes')
 MongoDBRoutes(app);
 
 var Authentication = require("./authentication/methods")
+
 var Notification = require('./notifications/methods')
+var NotificationRoutes = require('./notifications/routes')
+NotificationRoutes(app, io);
 
 server.listen(8080);
 console.log('listening on 8080');
@@ -42,13 +45,7 @@ console.log('listening on 8080');
 io.on('connection', function(socket) {
   var userId = socket.request._query.id;
   var school = socket.request._query.school;
-  MongoDB.register({id: userId,school: school, sockets: [socket.id]}).then(()=>{
-    MongoDB.unregister({id: userId, school: school}, io).then((response) => {
-      console.log(response);
-    },(error) => {
-      console.log(error);
-    })
-  })
+  MongoDB.register({id: userId,school: school, sockets: [socket.id]}, io)
 });
 
 // app.post('/realtime',function(request, response){
