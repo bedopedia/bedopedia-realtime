@@ -33,6 +33,9 @@ var update = function(collectionName, query, record) {
 }
 
 var find = function(collectionName, query) {
+  if (query.id) {
+    query.id = query.id.toString();
+  }
   return new Promise((resolve, reject)=> {
     MongoClient.connect(url, function(erro, db){
       var collection = db.collection(collectionName);
