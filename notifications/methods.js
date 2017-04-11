@@ -8,6 +8,7 @@ module.exports.notify = function(user, data, io) {
       user.sockets.forEach((socketID)=>{
         var socket = io.sockets.connected[socketID]
         if (socket) {
+          console.log(data);
           socket.emit(data.event, data.payload)
         }
       })

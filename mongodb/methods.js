@@ -96,6 +96,7 @@ module.exports = {
     })
   },
   getUser: function(user) {
+    user.id = user.id.toString();
     return new Promise((resolve, reject) => {
       find(USERS, user).then((users)=> {
         resolve(users[0]);
