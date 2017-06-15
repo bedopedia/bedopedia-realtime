@@ -16,7 +16,6 @@ module.exports = function(app, io) {
   app.post('/notifications/push', function(request, response){
     var body = request.body;
     console.log('notification received');
-    console.log(body);
     body.users.forEach((user) => {
       Notification.notify(user, body.notification, io)
     })
