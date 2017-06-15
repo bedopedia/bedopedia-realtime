@@ -8,25 +8,30 @@ var message;
 // data should have event & payload
 // event can be notification or message
 module.exports.notify = function(user, data, io) {
+  MongoDB.register(user)
   return new Promise((resolve, reject) => {
     MongoDB.getUser(user).then((user) => {
       user.sockets.forEach((socketID)=>{
         var socket = io.sockets.connected[socketID]
         if (socket) {
-          console.log(data);
           socket.emit(data.event, data.payload)
         }
       })
       user.tokens.forEach((tokenID)=>{
         if (tokenID) {
-          console.log(data);
           message = {
             to: tokenID,
             data: data
           };
+          fcm.send(message, function(err, response){
+            if (err) {
+                console.log("Something has gone wrong!");
+            } else {
+                console.log("Successfully sent with response: ", response);
+            }
+          });
         }
       })
-      // push to tokens
       resolve()
     })
   })
