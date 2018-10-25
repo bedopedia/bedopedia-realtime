@@ -5,10 +5,20 @@ var express = require('express');
 var bodyParser = require("body-parser");
 var io = require('socket.io');
 var http = require('http');
-var app = express();
-var server = http.createServer(app);
-var io = io.listen(server);
+var fs = require('fs');
 
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/realtime.skolera.com/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/realtime.skolera.com/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/realtime.skolera.com/chain.pem', 'utf8');
+
+const credentials = {
+  key: "privateKey",
+  cert: "certificate",
+  ca: "ca"
+};
+var app = express();
+var server = http.createServer(credentials, app);
+var io = io.listen(server);
 
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
