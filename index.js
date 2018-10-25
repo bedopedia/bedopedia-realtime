@@ -12,9 +12,9 @@ const certificate = fs.readFileSync('/etc/letsencrypt/live/realtime.skolera.com/
 const ca = fs.readFileSync('/etc/letsencrypt/live/realtime.skolera.com/chain.pem', 'utf8');
 
 const credentials = {
-  key: "privateKey",
-  cert: "certificate",
-  ca: "ca"
+  key: privateKey,
+  cert: certificate,
+  ca: ca
 };
 var app = express();
 var server = http.createServer(credentials, app);
