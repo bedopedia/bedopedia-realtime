@@ -3,7 +3,7 @@ var assert = require('assert');
 var extend = require('extend');
 
 // Connection URL
-var url = 'mongodb://localhost:27017/myproject';
+var url = 'mongodb://localhost:27017/production';
 const USERS = 'users';
 
 var insert = function(collectionName, record) {
