@@ -24,7 +24,10 @@ module.exports.notify = function(user, data, io) {
           if (tokenID) {
             message = {
               to: tokenID,
-              data: data
+              notification: {
+                body: data.payload.text,
+                title: "Skolera"
+              }
             };
             fcm.send(message, function(err, response){
               if (err) {
