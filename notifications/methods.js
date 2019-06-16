@@ -1,6 +1,7 @@
 var MongoDB = require('../mongodb/methods')
 var FCM = require('fcm-node');
-const serverKey = process.env.SERVERKEY;
+// const serverKey = process.env.SERVERKEY;
+const serverKey = 'AAAArO2sV0k:APA91bHGhvw6EX-42rDXvj64OS3X-6e_SKtQ95p7NSTHVGwTMj4vEUxMXbzJfFYpSvhK_eaJPxG8zyN0UUpG3MbjbhXeRwVTUgI1KGtioggrT8o9VfD2XBgzW6o0MBNhahbJ7zRadbiZ';
 var fcm = new FCM(serverKey);
 
 var message;
