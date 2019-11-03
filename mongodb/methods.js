@@ -80,7 +80,8 @@ module.exports = {
       find(USERS, query).then((users) => {
         if (users.length > 0) { //exists
           var updatedUser = extend({tokens: [], sockets: []}, users[0], user);
-          updatedUser.tokens = getTokens(user.tokens,users[0].tokens);
+          // updatedUser.tokens = getTokens(user.tokens,users[0].tokens);
+          updatedUser.tokens = getTokens(user.tokens,[]);
           updatedUser.sockets = getOpenSockets(getTokens(user.sockets, users[0].sockets),io);
           if (updatedUser.tokens.length == 0) {
             delete updatedUser.tokens
